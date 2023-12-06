@@ -66,7 +66,6 @@ router
     requireAuth,
     wsExist,
     authorizeManager,
-    taskExist,
     getTaskDetails,
     editTaskAssigneesPATCH
   );
@@ -95,7 +94,6 @@ router
     requireAuth,
     wsExist,
     authorizeManager,
-    taskExist,
     getTaskDetails,
     deleteTask
   );

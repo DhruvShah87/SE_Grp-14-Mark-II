@@ -2,7 +2,7 @@ import { Request, Response } from "express";
 
 import { db } from "../config/database";
 import { users } from "../model/User";
-import { eq } from "drizzle-orm";
+import { eq, and } from "drizzle-orm";
 
 import { workspaces, members } from "../model/Workspace";
 
@@ -119,7 +119,9 @@ export const createWorkspacePost = async (req: Request, res: Response) => {
 };
 
 export const getWorkspace = async (req: Request, res: Response) => {
-  const wsID: any = req.params.wsID;
+  const wsID:any = parseInt(req.params.wsID, 10);
+  
+
   try {
     const cachedData = await redisClient.get(
       `workspace:${wsID}`,
@@ -135,16 +137,17 @@ export const getWorkspace = async (req: Request, res: Response) => {
     }
 
     const workspace = await db
-      .select({
-        title: workspaces.title,
-        description: workspaces.description,
-        projectManager: users.name,
-        progress: workspaces.progress,
-      })
-      .from(workspaces)
-      .where(eq(workspaces.workspaceID, wsID))
-      .innerJoin(users, eq(workspaces.projectManager, users.userID))
-      .limit(1);
+    .select({
+      title: workspaces.title,
+      description: workspaces.description,
+      projectManager: users.name,
+      projectManagerID: workspaces.projectManager,
+      progress: workspaces.progress,
+    })
+    .from(workspaces)
+    .where(eq(workspaces.workspaceID, wsID))
+    .innerJoin(users, eq(workspaces.projectManager, users.userID))
+    .limit(1);
 
     await redisClient.set(
       `workspace:${wsID}`,
@@ -154,6 +157,7 @@ export const getWorkspace = async (req: Request, res: Response) => {
     );
 
     res.json(workspace);
+   
   } catch (error) {
     console.log(error);
     return res

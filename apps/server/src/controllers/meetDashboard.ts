@@ -55,6 +55,7 @@ export const meetDashboard = async (req: Request, res: Response) => {
 
     const meetDashboard = {
       meet: Meet[0],
+      manager: req.workspace.projectManager,
       Invitees: Invitees,
     };
 

@@ -59,8 +59,12 @@ export const authorizeManager = async (
   // };
 
   const userID: any = req.user.userID;
+  const wsID:any = parseInt(req.params.wsID, 10);
+
 
   try {
+    // console.log(Workspace[0]);
+
     if (req.workspace.projectManager === userID) next();
     else {
       res.status(401).send({error: "You do not own the workspace"});

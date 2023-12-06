@@ -85,13 +85,11 @@ export const getTaskDetails = async (
   next: NextFunction
 ) => {
   const wsID: any = req.params.wsID;
-  const taskID: any = req.params.taskID;
+  const taskID: any = parseInt(req.params.taskID, 10);
 
   try {
 
-    const taskID: any = parseInt(req.params.taskID, 10);
-   
-    if (taskID != req.params.taskID) {
+    if (taskID !== req.params.taskID) {
     return res.status(400).send({Error: "Invalid taskID"});
     }
     else{
@@ -140,7 +138,6 @@ export const getTaskDetails = async (
 
     res.locals.assignees = taskMem;
 */
-    next();
   } catch (error) {
     console.log(error);
     return res

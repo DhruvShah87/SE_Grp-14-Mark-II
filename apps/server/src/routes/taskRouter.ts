@@ -59,7 +59,6 @@ router
     requireAuth,
     wsExist,
     authorizeManager,
-    taskExist,
     getTaskDetails,
     editTaskAssigneesGet
   )
@@ -78,7 +77,6 @@ router
     requireAuth,
     wsExist,
     authorizeManager,
-    taskExist,
     getTaskDetails,
     editTaskDetailsGet
   )
@@ -86,7 +84,6 @@ router
     requireAuth,
     wsExist,
     authorizeManager,
-    taskExist,
     getTaskDetails,
     editTaskDetailsPATCH
   )

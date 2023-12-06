@@ -88,6 +88,14 @@ export const getTaskDetails = async (
   const taskID: any = req.params.taskID;
 
   try {
+
+    const taskID: any = parseInt(req.params.taskID, 10);
+   
+    if (taskID != req.params.taskID) {
+    return res.status(400).send({Error: "Invalid taskID"});
+    }
+    else{
+
     const Task = await db
       .select()
       .from(tasks)
@@ -96,17 +104,15 @@ export const getTaskDetails = async (
 
     console.log(Task);
 
-    if (Task.length == 0)
-      return res.status(404).send({ error: "Task doesn't exist" });
+    if (Task.length > 0) {
 
-    res.locals.taskTitle = Task[0].title;
-    res.locals.taskDescription = Task[0].description;
-    res.locals.taskDeadline = Task[0].deadline;
-    res.locals.taskStatus = Task[0].status;
+      console.log(Task[0]);
+      res.locals.taskTitle = Task[0].title;
+      res.locals.taskDescription = Task[0].description;
+      res.locals.taskDeadline = Task[0].deadline;
+      res.locals.taskStatus = Task[0].status;
 
-    console.log("Saved");
-
-    const Assignees = await db
+      const Assignees = await db
       .select({
         name: users.name,
       })
@@ -115,6 +121,14 @@ export const getTaskDetails = async (
       .innerJoin(users, eq(users.userID, assignees.assigneeID));
 
     res.locals.assignees = Assignees;
+
+      next();
+    } else {
+      res.status(404).send({ Message: "Task Doesn't Exist" });
+    }
+  }
+
+   
 
     /*
     const taskMem = await db

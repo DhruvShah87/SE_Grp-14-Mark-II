@@ -6,115 +6,51 @@ import axios from "axios";
 import { useParams } from "next/navigation";
 import { useFieldArray, useForm } from "react-hook-form";
 import { useRouter, useSearchParams } from "next/navigation";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faXmark } from "@fortawesome/free-solid-svg-icons";
 
 export default function Setting() {
-  // const [hi, setHi] = useState("");
 
   const params = useParams();
   const id = params.id;
-
-  // useEffect(()=> {
-  //   setHi(id);
-  // },[])
-
-  const hi = ["jainam", "Shah", "three", "four", "five", "six"];
-
-  const members = [
-    {
-      member_id: "",
-      Role: "",
-    },
-  ];
 
   const [workspace, setWorkspace] = useState({
     title: "",
     type: "",
     description: "",
-    members: members,
   });
 
-  const { register, handleSubmit, control } = useForm({
-    defaultValues: {
-      members: [{}],
-    },
-  });
+  const router = useRouter();
 
-  const { fields, append, remove } = useFieldArray({
-    control,
-    name: "members",
-  });
-
-  // useEffect(() => {
-  // const initialFieldsCount = 1; // Change this to the desired initial count
-  // let isMounted = true;
-  // if (isMounted) {
-  //   for (let i = 0; i < initialFieldsCount; i++) {
-  // append({ /* initial field values */ });
-  //   }
-  // }
-  // return () => {
-  //   isMounted = false;
-  // };
-  // }, [append]);
-
-  // const { userId } = params;
-  // const { id } = useParams();
-  // const [values, setVa1uesJ = useState({
-  //   name:
-  //     email :
-
-  // async function onFormSubmit() {
-
-  //   let title = workspace.title;
-  //   let type = workspace.type;
-  //   let description = workspace.description;
-  //   try {
-  //     const res = fetch("http://localhost:3500/api/", {
-  //       method: "POST",
-  //       headers: {
-  //         "Content-Type": "application/json",
-  //       },
-  //       body: JSON.stringify({ title, type, description }),
-  //     }).then((res) => res.json());
-
-  //     // router.push("/dashboard");
-
-  //   } catch (err: any) {
-  //     console.log("Login failed", err.message);
-  //   }
-
-  // };
-
-  const onFormSubmit = (data: any) => {
-    const { members } = data;
+  const onFormSubmit = () => {
 
     let title = workspace.title;
     let type = workspace.type;
     let description = workspace.description;
     try {
       const res = fetch(
-        `${process.env.NEXT_PUBLIC_SERVER}/api/` + id + "/editWSDetails",
+        `${process.env.NEXT_PUBLIC_SERVER}/api/${id}/editWSDetails`,
         {
-          method: "POST",
+          method: "PATCH",
+          credentials: 'include',
           headers: {
             "Content-Type": "application/json",
           },
-          body: JSON.stringify({ title, type, description, members }),
+          body: JSON.stringify({ title, type, description}),
         }
       ).then((res) => res.json());
-
-      // router.push("/dashboard");
+      router.push("/dashboard");
     } catch (err: any) {
       console.log("Login failed", err.message);
     }
   };
 
   useEffect(() => {
+    
+    axios.defaults.withCredentials = true;
     const once = () => {
-      // console.log("check");
-
       axios
-        .get(`${process.env.NEXT_PUBLIC_SERVER}/api/` + id + "/editWSDetails")
+        .get(`${process.env.NEXT_PUBLIC_SERVER}/api/${id}/editWSDetails`)
         .then(
           (res) => {
             setWorkspace({
@@ -122,15 +58,10 @@ export default function Setting() {
               title: res.data.title,
               type: res.data.type,
               description: res.data.description,
-              members: res.data.Members,
             });
-          } /*console.log(res)*/
+          } 
         )
         .catch((err) => console.log(err));
-      const initialFieldsCount = members.length;
-      for (let i = 0; i < initialFieldsCount; i++) {
-        append({});
-      }
     };
     return () => once();
   }, []);
@@ -140,7 +71,7 @@ export default function Setting() {
       <div className="lg:w-1/3 md:w-1/2 sm:w-1/2 mx-auto flex flex-col justify-around">
         <div className="flex flex-col justify-around">
           <h1 className="text-2xl mb-4 mx-auto font-bold">Edit Workspace</h1>
-          <form action="" onSubmit={handleSubmit(onFormSubmit)}>
+          <form action="" onSubmit={onFormSubmit}>
             <div className="flex flex-col">
               <label htmlFor="name" id="name" className="font-bold mb-1">
                 Worksace Name
@@ -206,7 +137,7 @@ export default function Setting() {
                   })
                 }
               ></textarea>
-
+{/* 
               <label
                 htmlFor="member"
                 id="member"
@@ -214,7 +145,7 @@ export default function Setting() {
               >
                 member
               </label>
-              {/* <div className="flex flex-col w-3/5 mx-auto py-1 mt-3"> */}
+              <div className="flex flex-col w-3/5 mx-auto py-1 mt-3">
               <button
                 className="border border-xl rounded-xl bg-blue-600 mb-3 p-2 lg:w-1/3 sm:w-1/3 justify-items-start"
                 onClick={() => append({})}
@@ -245,21 +176,25 @@ export default function Setting() {
                         value={members[index].Role}
                         {...register(`members.${index}.Role` as any)}
                       >
-                        {/* <option disabled selected>Choose a role</option> */}
-                        <option value="collaborator">collaborator</option>
-                        <option value="Manager">Manager</option>
+                        <option disabled selected>Choose a role</option>
+                        <option value="Client">Client</option>
+                        <option value="Collaborator">Collaborator</option>
+                        <option value="TeamMate">TeamMate</option>
                       </select>
 
                       <button
-                        className="border bg-blue-600 m-2 p-1 rounded-xl py-1"
+                        className="border bg-blue-600 m-2 p-2 rounded-xl "
                         onClick={() => remove(index)}
                       >
-                        Erase
+                        <FontAwesomeIcon
+                                icon={faXmark}
+                                className="text-3xl text-[#eef6ff]"
+                              />
                       </button>
                     </div>
                   );
                 })}
-              </div>
+              </div> */}
 
               {/* } */}
 

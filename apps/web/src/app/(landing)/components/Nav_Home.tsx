@@ -2,6 +2,8 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faBars,faXmark } from "@fortawesome/free-solid-svg-icons";
 
 export default function Nav_Home() {
   const [navbar, setNavbar] = useState(false);
@@ -25,20 +27,22 @@ export default function Nav_Home() {
                     onClick={() => setNavbar(!navbar)}
                   >
                     {navbar ? (
-                      <Image
-                        src="/img/close.png"
-                        width={30}
-                        height={30}
-                        alt="logo"
-                      />
+                      <FontAwesomeIcon icon={faXmark} style={{color: "#ffffff",}}/>
+                      // <Image
+                      //   src="/img/close.png"
+                      //   width={30}
+                      //   height={30}
+                      //   alt="logo"
+                      // />
                     ) : (
-                      <Image
-                        src="/img/menu.png"
-                        width={30}
-                        height={30}
-                        alt="logo"
-                        className="focus:border-none active:border-none"
-                      />
+                      <FontAwesomeIcon icon={faBars} style={{color: "#ffffff",}} />
+                      // <Image
+                      //   src="/img/menu.png"
+                      //   width={30}
+                      //   height={30}
+                      //   alt="logo"
+                      //   className="focus:border-none active:border-none"
+                      // />
                     )}
                   </button>
                 </div>
@@ -52,12 +56,12 @@ export default function Nav_Home() {
               >
                 <ul className="h-screen md:h-auto items-center justify-center md:flex">
                   <li className="pb-6 text-xl text-white py-6 md:px-6 text-center md:hover:text-black md:hover:bg-transparent">
-                    <Link href="/about" onClick={() => setNavbar(!navbar)}>
+                    <Link href="#feature" onClick={() => setNavbar(!navbar)}>
                       Features
                     </Link>
                   </li>
                   <li className="pb-6 text-xl text-white py-6 md:px-6 text-center md:hover:text-black md:hover:bg-transparent">
-                    <Link href="/about" onClick={() => setNavbar(!navbar)}>
+                    <Link href="#Contactus" onClick={() => setNavbar(!navbar)}>
                       Contact Us
                     </Link>
                   </li>

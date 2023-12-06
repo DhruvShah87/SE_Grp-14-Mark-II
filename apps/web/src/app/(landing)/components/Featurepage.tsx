@@ -2,7 +2,7 @@ import Image from "next/image";
 
 export default function Featurepage() {
   return (
-    <div className="h-screen feature-bg">
+    <div className="h-screen feature-bg" id="feature">
 
       <div className="xl:flex xl:flex-row sm:flex sm:flex-col justify-between xl:w-4/5 sm:w-full mx-auto xl:p-20 xl:h-1/3 items-center sm:h-full">
         <div className="xl:w-2/5 sm:w-full p-5">

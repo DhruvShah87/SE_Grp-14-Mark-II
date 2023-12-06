@@ -17,7 +17,13 @@ export function TaskDialog({ id }: { id: string }) {
             <p>Create a task</p>
           </HoverCardContent>
         </HoverCard> */}
-        <FontAwesomeIcon icon={faClipboard} className="cursor-pointer" />
+        {/* <FontAwesomeIcon icon={faClipboard} className="cursor-pointer" /> */}
+        <Image
+                  src="/img/addtask.png"
+                  alt="Image Not found"
+                  width={30}
+                  height={30}
+                />
       </DialogTrigger>
       <DialogContent className="bg-[#E5F2FF]">
         <Task wsID={id} />

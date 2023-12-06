@@ -6,6 +6,7 @@ import { faGear } from "@fortawesome/free-solid-svg-icons";
 import { useParams } from "next/navigation";
 import { TaskDialog } from "@/components/ui/task-dialog";
 import MeetDialog from "./MeetDialog";
+import Image from "next/image";
 
 export default function ProjectNav() {
   const router = useParams();

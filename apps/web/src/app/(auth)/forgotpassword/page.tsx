@@ -13,14 +13,15 @@ export default function Forgotpassword() {
 
   async function onSubmit() {
     try {
+      let em=email.email;
       const res = await fetch(
-        `${process.env.NEXT_PUBLIC_SERVER}/api/forgotPasswordPost`,
+        `${process.env.NEXT_PUBLIC_SERVER}/api/forgotPassword`,
         {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
           },
-          body: JSON.stringify({ email }),
+          body: JSON.stringify({ em }),
         }
       ).then((res) => res.json());
 
@@ -75,7 +76,6 @@ export default function Forgotpassword() {
             </button>
           </div>
         </form>
-        T
       </div>
     </div>
   );

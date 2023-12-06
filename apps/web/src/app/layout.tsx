@@ -1,7 +1,8 @@
 import "./globals.css";
 import type { Metadata } from "next";
-
 import { mont } from "@/utils/fonts";
+import {CookiesProvider} from 'next-client-cookies/server'
+
 
 export const metadata: Metadata = {
   title: "Teem App",
@@ -31,7 +32,11 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body className={mont.className}>{children}</body>
+      <body className={mont.className}>
+        <CookiesProvider>
+        {children}
+        </CookiesProvider>
+        </body>
     </html>
   );
 }

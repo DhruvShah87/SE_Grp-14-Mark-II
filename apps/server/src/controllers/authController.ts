@@ -154,24 +154,7 @@ export const loginHandler = async (req: Request, res: Response) => {
     }
 
     const session_id = User[0].userID.toString();
-    const existing_session = await findSessions(session_id);
-
-    if (existing_session) {
-      if (!req.cookies.accessToken) {
-        const access_token = signJWT({ tokenUser }, { expiresIn: "24h" });
-        res.cookie("accessToken", access_token, accessTokenCookieOptions);
-        res.cookie("refreshToken", existing_session, refreshTokenCookieOptions);
-
-        console.log("Access token created", existing_session);
-        return res.send({ message: "Login successful" });
-      }
-
-      console.log(req.cookies.accessToken);
-      console.log("Already logged in");
-
-      return res.status(200).send({ message: "Already logged in" });
-    }
-
+  
     const access_token = signJWT({ tokenUser }, { expiresIn: "24h" });
 
     const refresh_token = signJWT(

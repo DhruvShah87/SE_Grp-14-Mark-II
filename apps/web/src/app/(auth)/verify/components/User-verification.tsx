@@ -84,19 +84,7 @@ export default function Verification() {
     <div className="bg-[#E5F2FF]">
       <div className="h-screen flex flex-col text-center">
         <Toaster />
-        {/* <Image
-          alt="Image Not Found"
-          src={"/img/Verification_bg.png"}
-          className="-z-30 absolute"
-          fill
-        /> */}
-        {/* </div> */}
         <div className="lg:w-1/4 sm:w-3/4 md:w-3/4 mx-auto my-auto">
-          {/* <img
-            src="/img/Logo_black.png"
-            style={{ width: "100%", height: "40%" }}
-            alt=""
-          /> */}
           <Image
             alt="Image Not Found"
             src={"/img/Logo_black.png"}
@@ -104,8 +92,6 @@ export default function Verification() {
             width={100}
             height={100}
             className="mx-auto"
-            // className="-z-30 absolute"
-            // fill
           />
           <h1 className="font-bold mb-4 mt-3">Verify your account</h1>
           <p>Enter the OTP we&aphos;ve sent in your mailbox</p>
@@ -139,29 +125,8 @@ export default function Verification() {
               Resend OTP
             </button>
           </div>
-          {/* <div>{status}</div> */}
         </div>
       </div>
-      {/* <div className="h-[4rem] flex justify-center w-full bg-footer">
-        <div className="mt-3">
-          <a href="#">
-            <img
-              src="/img/insta.png"
-              style={{ width: "90%", height: "80%" }}
-              alt=""
-            />
-          </a>
-        </div>
-        <div className="mt-3 ml-2">
-          <a href="#">
-            <img
-              src="/img/E_mail.png"
-              style={{ width: "75%", height: "80%" }}
-              alt=""
-            />
-          </a>
-        </div>
-      </div> */}
     </div>
   );
 }

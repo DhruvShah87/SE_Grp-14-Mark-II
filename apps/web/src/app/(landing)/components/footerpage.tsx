@@ -2,7 +2,7 @@ import Link from "next/link";
 
 export default function Footerpage() {
   return (
-    <div className='h-48'>
+    <div className='h-48' id="Contactus">
         <div className='footer-bg h-[calc(60vh-3.5rem)] flex bg-[#040D21]'>
             <div className='xl:w-3/5 sm:w-full mx-auto justify-center my-auto'>
 

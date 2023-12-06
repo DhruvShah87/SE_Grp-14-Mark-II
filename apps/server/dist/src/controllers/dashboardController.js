@@ -10,8 +10,6 @@ const TaskAssignee_1 = require("../model/TaskAssignee");
 const MeetInvitee_1 = require("../model/MeetInvitee");
 const dashboardGet = async (req, res) => {
     try {
-        console.log("dashboard");
-        console.log(req.user.userID);
         const Workspace = await database_1.db
             .select({
             workspaceID: Workspace_1.workspaces.workspaceID,
@@ -25,7 +23,6 @@ const dashboardGet = async (req, res) => {
             .innerJoin(Workspace_1.members, (0, drizzle_orm_1.eq)(Workspace_1.members.workspaceID, Workspace_1.workspaces.workspaceID))
             .innerJoin(User_1.users, (0, drizzle_orm_1.eq)(Workspace_1.workspaces.projectManager, User_1.users.userID))
             .where((0, drizzle_orm_1.eq)(Workspace_1.members.memberID, req.user.userID));
-        console.log(Workspace);
         res.json(Workspace);
     }
     catch (err) {

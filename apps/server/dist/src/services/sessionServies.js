@@ -7,10 +7,8 @@ exports.deleteSession = exports.getDecodedToken = exports.findSessions = exports
 const redisConnect_1 = require("../config/redisConnect");
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 exports.accessTokenCookieOptions = {
-    httpOnly: true,
-    secure: true,
-    sameSite: "lax",
-    domain: "teem-app.vercel.app",
+    httpOnly: false,
+    secure: false,
     path: "/",
     expires: new Date(Date.now() + 86400 * 1000),
 };

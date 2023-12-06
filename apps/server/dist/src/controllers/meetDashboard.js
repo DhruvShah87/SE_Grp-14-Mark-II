@@ -42,6 +42,7 @@ const meetDashboard = async (req, res) => {
             .where((0, drizzle_orm_1.and)((0, drizzle_orm_1.eq)(MeetInvitee_1.invitees.meetID, meetID), (0, drizzle_orm_1.eq)(MeetInvitee_1.invitees.workspaceID, wsID)));
         const meetDashboard = {
             meet: Meet[0],
+            manager: req.workspace.projectManager,
             Invitees: Invitees,
         };
         await redisConnect_1.client.set(`meet:${meetID}`, JSON.stringify(meetDashboard), "EX", 60 * 60 * 24);

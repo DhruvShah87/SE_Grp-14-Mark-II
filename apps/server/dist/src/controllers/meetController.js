@@ -175,8 +175,8 @@ const showInvitees = async (req, res) => {
 };
 exports.showInvitees = showInvitees;
 const editMeetDetails = async (req, res) => {
-    const wsID = req.workspace.workspaceID;
-    const meetID = req.params.meetID;
+    const wsID = parseInt(req.params.wsID);
+    const meetID = parseInt(req.params.meetID);
     var { title, agenda, description, date, startTime, endTime, venue } = req.body;
     try {
         if (!title ||
@@ -186,10 +186,10 @@ const editMeetDetails = async (req, res) => {
             !startTime ||
             !endTime ||
             !venue) {
-            return res.status(400).json({ error: "Fields are insufficient" });
+            return res.status(400).send({ message: "Fields are insufficient" });
         }
         else if (title === null || title === "")
-            return res.status(400).send({ error: "Title can not be empty" });
+            return res.status(400).send({ message: "Title can not be empty" });
         else {
             const existingMeet = await database_1.db
                 .select()

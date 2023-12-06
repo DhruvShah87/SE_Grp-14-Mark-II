@@ -71,6 +71,7 @@ const verifyUserHandler = async (req, res) => {
             .set({ isVerified: true })
             .where((0, drizzle_orm_1.eq)(User_1.users.emailId, email))
             .returning();
+        console.log(User);
         const userID = User[0].userID;
         const name = User[0].name;
         const isVerified = true;
@@ -79,7 +80,6 @@ const verifyUserHandler = async (req, res) => {
         const access_token = (0, jwt_1.signJWT)({ tokenUser }, { expiresIn: "24h" });
         const refresh_token = (0, jwt_1.signJWT)({ tokenUser, session: session_id }, { expiresIn: "30d" });
         const session = await (0, sessionServies_1.createSession)(session_id, req.get("user-agent") || "", refresh_token, isVerified);
-        console.log(access_token, refresh_token);
         res.cookie("refreshToken", refresh_token, sessionServies_1.refreshTokenCookieOptions);
         res.cookie("accessToken", access_token, sessionServies_1.accessTokenCookieOptions);
         return res.status(200).send({ message: "User verified" });
@@ -107,25 +107,9 @@ const loginHandler = async (req, res) => {
             return res.status(400).send({ error: "Invalid Credentials" });
         }
         const session_id = User[0].userID.toString();
-        const existing_session = await (0, sessionServies_1.findSessions)(session_id);
-        if (existing_session) {
-            if (!req.cookies.accessToken) {
-                const access_token = (0, jwt_1.signJWT)({ tokenUser }, { expiresIn: "24h" });
-                res.cookie("accessToken", access_token, sessionServies_1.accessTokenCookieOptions);
-                res.cookie("refreshToken", existing_session, sessionServies_1.refreshTokenCookieOptions);
-                console.log("Access token created", existing_session);
-                return res.send({ message: "Login successful" });
-            }
-            console.log(req.cookies.accessToken);
-            console.log("Already logged in");
-            return res.status(200).send({ message: "Already logged in" });
-        }
         const access_token = (0, jwt_1.signJWT)({ tokenUser }, { expiresIn: "24h" });
         const refresh_token = (0, jwt_1.signJWT)({ tokenUser, session: session_id }, { expiresIn: "30d" });
         const session = await (0, sessionServies_1.createSession)(session_id, req.get("user-agent") || "", refresh_token, isVerified);
-        console.log(access_token, refresh_token);
-        res.cookie("refreshToken", refresh_token, sessionServies_1.refreshTokenCookieOptions);
-        res.cookie("accessToken", access_token, sessionServies_1.accessTokenCookieOptions);
         return res.send({
             message: "Login successful",
             access_token,

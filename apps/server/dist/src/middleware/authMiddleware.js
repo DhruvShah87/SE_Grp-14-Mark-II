@@ -34,8 +34,9 @@ const jwt_1 = require("../utils/jwt");
 const sessionServies_1 = require("../services/sessionServies");
 dotenv.config();
 const requireAuth = (req, res, next) => {
-    const { accessToken, refreshToken } = req.cookies;
-    console.log(accessToken, refreshToken);
+    var _a;
+    const accessToken = (_a = req.headers.authorization) === null || _a === void 0 ? void 0 : _a.split(" ")[1];
+    const refreshToken = req.headers.cookie;
     try {
         if (accessToken) {
             const payload = jsonwebtoken_1.default.verify(accessToken, process.env.JWT_SECRET);
@@ -53,9 +54,6 @@ const requireAuth = (req, res, next) => {
             const access_token = (0, jwt_1.signJWT)(Object.assign(Object.assign({}, payload), { session: payload.userID }));
             res.cookie("accessToken", access_token, sessionServies_1.accessTokenCookieOptions);
             req.user = payload.tokenUser;
-            if (!req.user.isVerified) {
-                return res.status(401).json({ message: "Please verify your email" });
-            }
         }
         else {
             return res.status(401).json({ message: "Please login Again" });

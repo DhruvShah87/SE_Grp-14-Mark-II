@@ -61,6 +61,7 @@ export const taskDashboard = async (req: Request, res: Response) => {
 
     const taskDashboard = {
       task: Task[0],
+      manager: req.workspace.projectManager,
       Assignees: Assignees,
     };
 

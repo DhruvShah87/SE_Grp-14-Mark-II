@@ -2,7 +2,7 @@ import { Request, Response } from "express";
 
 import { db } from "../config/database";
 import { users } from "../model/User";
-import { eq } from "drizzle-orm";
+import { eq, and } from "drizzle-orm";
 
 import { workspaces, members } from "../model/Workspace";
 
@@ -12,14 +12,13 @@ import { client as redisClient } from "../config/redisConnect";
 
 export const createWorkspacePost = async (req: Request, res: Response) => {
   // res.send("<h1>You can create new workspace</h1>");
-  var { title, type, description, Members = [] } = req.body;
+  var { title, type, description, members: Members = [] } = req.body;
 
   if (!title) {
     return res.status(400).send({ error: "Title is required" });
   }
 
   const userID = req.user.userID;
-  console.log("from the variable", userID);
 
   const unregisteredMembers: string[] = [];
   const registeredMembers: string[] = [];
@@ -68,20 +67,20 @@ export const createWorkspacePost = async (req: Request, res: Response) => {
     // console.log(task_id[0].task_id);
 
     for (const Member of Members) {
-      const { member_id, Role } = Member;
+      const { Email, Role } = Member;
 
       const User = await db
         .select()
         .from(users)
-        .where(eq(users.emailId, member_id))
+        .where(eq(users.emailId, Email))
         .limit(1);
 
       if (User.length === 0) {
         // Handle unregistered team members
-        unregisteredMembers.push(member_id);
+        unregisteredMembers.push(Email);
       } else {
         // Add registered members to the workspace
-        registeredMembers.push(member_id);
+        registeredMembers.push(Email);
         await db.insert(members).values({
           workspaceID: workspace_id[0].workspace_id,
           memberID: User[0].userID,
@@ -119,7 +118,9 @@ export const createWorkspacePost = async (req: Request, res: Response) => {
 };
 
 export const getWorkspace = async (req: Request, res: Response) => {
-  const wsID: any = req.params.wsID;
+  const wsID:any = parseInt(req.params.wsID, 10);
+  
+
   try {
     const cachedData = await redisClient.get(
       `workspace:${wsID}`,
@@ -135,16 +136,17 @@ export const getWorkspace = async (req: Request, res: Response) => {
     }
 
     const workspace = await db
-      .select({
-        title: workspaces.title,
-        description: workspaces.description,
-        projectManager: users.name,
-        progress: workspaces.progress,
-      })
-      .from(workspaces)
-      .where(eq(workspaces.workspaceID, wsID))
-      .innerJoin(users, eq(workspaces.projectManager, users.userID))
-      .limit(1);
+    .select({
+      title: workspaces.title,
+      description: workspaces.description,
+      projectManager: users.name,
+      projectManagerID: workspaces.projectManager,
+      progress: workspaces.progress,
+    })
+    .from(workspaces)
+    .where(eq(workspaces.workspaceID, wsID))
+    .innerJoin(users, eq(workspaces.projectManager, users.userID))
+    .limit(1);
 
     await redisClient.set(
       `workspace:${wsID}`,
@@ -154,6 +156,7 @@ export const getWorkspace = async (req: Request, res: Response) => {
     );
 
     res.json(workspace);
+   
   } catch (error) {
     console.log(error);
     return res

@@ -3,9 +3,8 @@ import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 import Image from "next/image";
 import { faClipboard } from "@fortawesome/free-regular-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { HoverCard, HoverCardContent, HoverCardTrigger } from "./hover-card";
 
-export function TaskDialog({ id }: { id: string }) {
+export async function TaskDialog({ id }: { id: string }) {
   return (
     <Dialog>
       <DialogTrigger asChild className="cursor-pointer">

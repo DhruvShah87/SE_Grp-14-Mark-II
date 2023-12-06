@@ -1,7 +1,7 @@
 "use client";
 import React, { FC, useState, useRef, useEffect } from "react";
 import Image from "next/image";
-import Link from "next/link";
+
 import { useRouter, useSearchParams } from "next/navigation";
 import toast, { Toaster } from "react-hot-toast";
 
@@ -94,7 +94,7 @@ export default function Verification() {
             className="mx-auto"
           />
           <h1 className="font-bold mb-4 mt-3">Verify your account</h1>
-          <p>Enter the OTP we&aphos;ve sent in your mailbox</p>
+          <p>Enter the OTP we{"'"}ve sent in your mailbox</p>
 
           <div className="flex justify-center items-center space-x-2">
             {otp.map((_, index) => {

@@ -6,15 +6,12 @@ const User_1 = require("../model/User");
 const drizzle_orm_1 = require("drizzle-orm");
 const Workspace_1 = require("../model/Workspace");
 const redisConnect_1 = require("../config/redisConnect");
-const sendInvite_1 = require("../services/sendInvite");
-const sendInvitation_1 = require("../services/sendInvitation");
 const createWorkspacePost = async (req, res) => {
-    var { title, type, description, Members = [] } = req.body;
+    var { title, type, description, members: Members = [] } = req.body;
     if (!title) {
         return res.status(400).send({ error: "Title is required" });
     }
     const userID = req.user.userID;
-    console.log("from the variable", userID);
     const unregisteredMembers = [];
     const registeredMembers = [];
     const ProjectManager = await database_1.db
@@ -43,17 +40,17 @@ const createWorkspacePost = async (req, res) => {
         })
             .returning({ projectmanger_id: Workspace_1.members.memberID });
         for (const Member of Members) {
-            const { member_id, Role } = Member;
+            const { Email, Role } = Member;
             const User = await database_1.db
                 .select()
                 .from(User_1.users)
-                .where((0, drizzle_orm_1.eq)(User_1.users.emailId, member_id))
+                .where((0, drizzle_orm_1.eq)(User_1.users.emailId, Email))
                 .limit(1);
             if (User.length === 0) {
-                unregisteredMembers.push(member_id);
+                unregisteredMembers.push(Email);
             }
             else {
-                registeredMembers.push(member_id);
+                registeredMembers.push(Email);
                 await database_1.db.insert(Workspace_1.members).values({
                     workspaceID: workspace_id[0].workspace_id,
                     memberID: User[0].userID,
@@ -67,12 +64,10 @@ const createWorkspacePost = async (req, res) => {
                 UnregisteredMember: unregisteredMembers,
                 RegisteredMember: registeredMembers,
             });
-            await (0, sendInvitation_1.sendInvitation)(ProjectManager[0].name, title, unregisteredMembers);
         }
         else {
             res.status(201).send({ message: "Workspace Created successfully" });
         }
-        await (0, sendInvite_1.sendInvite)(ProjectManager[0].name, title, registeredMembers);
     }
     catch (err) {
         console.log(err);
@@ -83,7 +78,7 @@ const createWorkspacePost = async (req, res) => {
 };
 exports.createWorkspacePost = createWorkspacePost;
 const getWorkspace = async (req, res) => {
-    const wsID = req.params.wsID;
+    const wsID = parseInt(req.params.wsID, 10);
     try {
         const cachedData = await redisConnect_1.client.get(`workspace:${wsID}`, async (err, data) => {
             if (err)
@@ -98,6 +93,7 @@ const getWorkspace = async (req, res) => {
             title: Workspace_1.workspaces.title,
             description: Workspace_1.workspaces.description,
             projectManager: User_1.users.name,
+            projectManagerID: Workspace_1.workspaces.projectManager,
             progress: Workspace_1.workspaces.progress,
         })
             .from(Workspace_1.workspaces)

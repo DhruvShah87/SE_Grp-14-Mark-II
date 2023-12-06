@@ -37,6 +37,7 @@ const wsExist = async (req, res, next) => {
 exports.wsExist = wsExist;
 const authorizeManager = async (req, res, next) => {
     const userID = req.user.userID;
+    const wsID = parseInt(req.params.wsID, 10);
     try {
         if (req.workspace.projectManager === userID)
             next();

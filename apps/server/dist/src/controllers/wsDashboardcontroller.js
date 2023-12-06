@@ -16,6 +16,10 @@ const getStream = async (req, res) => {
         return res.status(400).send({ message: "Invalid workspace ID" });
     }
     try {
+        const Workspace = await database_1.db
+            .select()
+            .from(Workspace_1.workspaces)
+            .where((0, drizzle_orm_1.eq)(Workspace_1.workspaces.workspaceID, wsID));
         const taskStream = await database_1.db
             .select()
             .from(Task_1.tasks)
@@ -51,7 +55,7 @@ const getStream = async (req, res) => {
                 meetDate: meet.meetDate,
             })),
         ];
-        res.json({ Stream: Stream });
+        res.json({ Workspace: Workspace[0], Stream: Stream });
     }
     catch (err) {
         console.log(err);

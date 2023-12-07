@@ -572,7 +572,7 @@ export const getYourMeet = async (req: Request, res: Response) => {
 };
 
 export const editWSDetailsGet = async (req: Request, res: Response) => {
-  const wsID: any = req.workspace.workspaceID;
+  const wsID = req.workspace.workspaceID;
 
   try {
     const Workspace = await db
@@ -585,7 +585,10 @@ export const editWSDetailsGet = async (req: Request, res: Response) => {
       .where(eq(workspaces.workspaceID, wsID))
       .limit(1);
 
-    res.status(200).json(Workspace[0]);
+    res.status(200).send({
+      Workspace: Workspace[0],
+      isManager: req.workspace.projectManager === req.user.userID,
+    });
   } catch (error) {
     console.log(error);
     return res

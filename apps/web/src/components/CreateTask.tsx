@@ -41,6 +41,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import toast, { Toaster } from "react-hot-toast";
 import { useRouter } from "next/navigation";
 import { useCookies } from "next-client-cookies";
+import { Icons } from "./ui/icons";
 
 const FormSchema = z.object({
   title: z
@@ -69,6 +70,7 @@ const FormSchema = z.object({
 
 export default function Task({ wsID }: { wsID: string }) {
   const [data, setData] = useState<Array<participant>>([]);
+  const [loading2, setLoading2] = useState(false);
 
   const router = useRouter();
   const cookie = useCookies();
@@ -104,7 +106,8 @@ export default function Task({ wsID }: { wsID: string }) {
   });
 
   function onSubmit(data: z.infer<typeof FormSchema>) {
-    console.log(JSON.stringify(data));
+    // console.log(JSON.stringify(data));
+    setLoading2(true);
     const res = fetch(
       `${process.env.NEXT_PUBLIC_SERVER}/api/${wsID}/assignTask`,
       {
@@ -120,6 +123,7 @@ export default function Task({ wsID }: { wsID: string }) {
     )
       .then((res) => res.json())
       .then((data) => {
+        setLoading2(false);
         if (data.message === "Task created successfully") {
           toast.success(data.message);
           router.forward();
@@ -332,6 +336,9 @@ export default function Task({ wsID }: { wsID: string }) {
               type="submit"
               className="bg-[#295be75c] rounded-[7px] text-lg hover:bg-blue-200 px-6 py-2"
             >
+              {loading2 && (
+                <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />
+              )}
               Submit
             </Button>
           </form>

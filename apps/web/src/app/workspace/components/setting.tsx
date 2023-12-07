@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import axios from "axios";
 import { useRouter, useParams } from "next/navigation";
 import { useCookies } from "next-client-cookies";
+import toast from "react-hot-toast";
 
 export default function Setting() {
   const params = useParams();
@@ -15,6 +16,35 @@ export default function Setting() {
     type: "",
     description: "",
   });
+
+  // console.log(cookie.get("refreshToken"));
+
+  useEffect(() => {
+    fetch(`${process.env.NEXT_PUBLIC_SERVER}/api/${id}/editWSDetails`, {
+      method: "GET",
+      credentials: "include",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${cookie.get("accessToken")}`,
+        cookie: cookie.get("refreshToken")!,
+      },
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        if (!data.isManager) {
+          toast.error("You are not authorized to view this page");
+          router.push("/dashboard");
+        }
+
+        console.log(data.Workspace);
+
+        setWorkspace({
+          title: data.Workspace.title,
+          type: data.Workspace.type,
+          description: data.Workspace.description,
+        });
+      });
+  }, [id]);
 
   const router = useRouter();
 
@@ -36,29 +66,32 @@ export default function Setting() {
           body: JSON.stringify({ title, type, description }),
         }
       ).then((res) => res.json());
-      router.push("/dashboard");
+      toast.success("Workspace details updated successfully");
+      setTimeout(() => {
+        router.push("/dashboard");
+      }, 700);
     } catch (err: any) {
       console.log("Login failed", err.message);
     }
   };
 
-  useEffect(() => {
-    axios.defaults.withCredentials = true;
-    const once = () => {
-      axios
-        .get(`${process.env.NEXT_PUBLIC_SERVER}/api/${id}/editWSDetails`)
-        .then((res) => {
-          setWorkspace({
-            ...workspace,
-            title: res.data.title,
-            type: res.data.type,
-            description: res.data.description,
-          });
-        })
-        .catch((err) => console.log(err));
-    };
-    return () => once();
-  }, []);
+  // useEffect(() => {
+  //   axios.defaults.withCredentials = true;
+  //   const once = () => {
+  //     axios
+  //       .get(`${process.env.NEXT_PUBLIC_SERVER}/api/${id}/editWSDetails`)
+  //       .then((res) => {
+  //         setWorkspace({
+  //           ...workspace,
+  //           title: res.data.title,
+  //           type: res.data.type,
+  //           description: res.data.description,
+  //         });
+  //       })
+  //       .catch((err) => console.log(err));
+  //   };
+  //   return () => once();
+  // }, []);
 
   return (
     <div className="w-screen min-h-[calc(100vh-7.9rem)] bg-gradient-to-b from-primaryblue to-white flex flex-row justify-between items-center">

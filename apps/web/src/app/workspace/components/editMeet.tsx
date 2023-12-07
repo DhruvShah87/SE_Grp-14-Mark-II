@@ -37,6 +37,8 @@ import type { meetType, inviteeType } from "./taskPage";
 import toast from "react-hot-toast";
 import { useCookies } from "next-client-cookies";
 import { useRouter } from "next/navigation";
+import { useState } from "react";
+import { Icons } from "@/components/ui/icons";
 
 const meetingFormSchema = z.object({
   title: z
@@ -75,6 +77,8 @@ export function EditMeet({
   const cookie = useCookies();
   const router = useRouter();
 
+  const [loading2, setLoading2] = useState(false);
+
   const form = useForm<MeetingFormValues>({
     resolver: zodResolver(meetingFormSchema),
     defaultValues: {
@@ -89,7 +93,8 @@ export function EditMeet({
   });
 
   function onSubmit(data: z.infer<typeof meetingFormSchema>) {
-    console.log(JSON.stringify(data));
+    // console.log(JSON.stringify(data));
+    setLoading2(true);
     const res = fetch(
       `${process.env.NEXT_PUBLIC_SERVER}/api/${meet.workspaceID}/${meet.meetID}/editMeetDetails`,
       {
@@ -105,7 +110,7 @@ export function EditMeet({
     )
       .then((res) => res.json())
       .then((data) => {
-        console.log(data.message);
+        setLoading2(false);
         if (data.message === "Meet Edited Successfully") {
           toast.success(data.message);
           router.push(`/workspace/${meet.workspaceID}/stream`);
@@ -297,6 +302,9 @@ export function EditMeet({
             type="submit"
             className="bg-[#295be75c] rounded-[7px] text-lg hover:bg-[#BDC4D8]  px-6 py-2"
           >
+            {loading2 && (
+              <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />
+            )}
             Edit
           </Button>
         </form>

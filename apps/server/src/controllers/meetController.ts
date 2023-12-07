@@ -247,8 +247,15 @@ export const editMeetDetails = async (req: Request, res: Response) => {
   const wsID = parseInt(req.params.wsID);
   const meetID = parseInt(req.params.meetID);
 
-  var { title, agenda, description, date, startTime, endTime, venue } =
-    req.body;
+  var {
+    title,
+    agenda,
+    description,
+    startDate: date,
+    startTime,
+    endTime,
+    venue,
+  } = req.body;
 
   try {
     if (

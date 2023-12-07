@@ -178,7 +178,7 @@ exports.showInvitees = showInvitees;
 const editMeetDetails = async (req, res) => {
     const wsID = parseInt(req.params.wsID);
     const meetID = parseInt(req.params.meetID);
-    var { title, agenda, description, date, startTime, endTime, venue } = req.body;
+    var { title, agenda, description, startDate: date, startTime, endTime, venue, } = req.body;
     try {
         if (!title ||
             !agenda ||

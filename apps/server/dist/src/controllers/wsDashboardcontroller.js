@@ -371,7 +371,10 @@ const editWSDetailsGet = async (req, res) => {
             .from(Workspace_1.workspaces)
             .where((0, drizzle_orm_1.eq)(Workspace_1.workspaces.workspaceID, wsID))
             .limit(1);
-        res.status(200).json(Workspace[0]);
+        res.status(200).send({
+            Workspace: Workspace[0],
+            isManager: req.workspace.projectManager === req.user.userID,
+        });
     }
     catch (error) {
         console.log(error);

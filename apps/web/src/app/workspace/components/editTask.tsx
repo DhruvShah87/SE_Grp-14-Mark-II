@@ -36,6 +36,9 @@ import {
 import { Textarea } from "@/components/ui/textarea";
 import type { taskType, assigneeType } from "./taskPage";
 import { useRouter } from "next/navigation";
+import { useCookies } from "next-client-cookies";
+import { useState } from "react";
+import { Icons } from "@/components/ui/icons";
 
 const FormSchema = z.object({
   title: z
@@ -67,6 +70,9 @@ export default function EditTask({
   assignee: assigneeType[];
 }) {
   const router = useRouter();
+  const cookie = useCookies();
+  const [loading2, setLoading2] = useState(false);
+
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
     mode: "onChange",
@@ -80,7 +86,9 @@ export default function EditTask({
   });
 
   function onSubmit(data: z.infer<typeof FormSchema>) {
-    console.log(JSON.stringify(data));
+    // console.log(JSON.stringify(data));
+    setLoading2(true);
+
     const res = fetch(
       `${process.env.NEXT_PUBLIC_SERVER}/api/${task.workspaceID}/${task.taskID}/editTaskDetails`,
       {
@@ -88,12 +96,15 @@ export default function EditTask({
         credentials: "include",
         headers: {
           "Content-Type": "application/json",
+          Authorization: `Bearer ${cookie.get("accessToken")}`,
+          cookie: cookie.get("refreshToken")!,
         },
         body: JSON.stringify(data),
       }
     )
       .then((res) => res.json())
       .then((data) => {
+        setLoading2(false);
         if (data.message === "Task Edited Successfully") {
           toast.success(data.message);
           setTimeout(() => {
@@ -245,6 +256,9 @@ export default function EditTask({
               type="submit"
               className="bg-[#295be75c] rounded-[7px] text-lg hover:bg-blue-200 px-6 py-2"
             >
+              {loading2 && (
+                <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />
+              )}
               Submit
             </Button>
           </form>

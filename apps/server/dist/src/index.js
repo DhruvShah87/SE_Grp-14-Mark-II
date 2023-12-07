@@ -24,7 +24,11 @@ exports.app.use((0, express_rate_limit_1.rateLimit)({
     max: 5000,
 }));
 exports.app.use((0, cors_1.default)({
-    origin: ["https://teem-app.vercel.app", "http://localhost:3000"],
+    origin: [
+        "https://teem-app.vercel.app",
+        "http://localhost:3000",
+        "https://se-grp-14-mark-ii-web.vercel.app",
+    ],
     credentials: true,
 }));
 exports.app.use((0, helmet_1.default)());

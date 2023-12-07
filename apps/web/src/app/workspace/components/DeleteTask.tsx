@@ -2,6 +2,7 @@
 import { Button } from "@/components/ui/button";
 import toast from "react-hot-toast";
 import { useCookies } from "next-client-cookies";
+import { useRouter } from "next/navigation";
 
 export default function DeleteTask({
   wsID,
@@ -13,6 +14,7 @@ export default function DeleteTask({
   Type: string;
 }) {
   const cookies = useCookies();
+  const router = useRouter();
   const onDelete = () => {
     fetch(
       `${process.env.NEXT_PUBLIC_SERVER}/api/${wsID}/${taskID}/edit${Type}Details`,
@@ -31,6 +33,10 @@ export default function DeleteTask({
         console.log(data);
         if (data.message === "Task deleted successfully") {
           toast.success("Task deleted successfully");
+
+          setTimeout(() => {
+            router.push(`/workspace/${wsID}/stream`);
+          }, 700);
         } else toast.error("Error in deleting task");
       });
   };

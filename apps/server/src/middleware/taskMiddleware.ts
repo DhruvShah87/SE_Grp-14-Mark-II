@@ -13,9 +13,9 @@ export const taskExist = async (
 ) => {
   try {
     const taskID: any = parseInt(req.params.taskID, 10);
-   
+
     if (taskID != req.params.taskID) {
-    return res.status(400).send({Error: "Invalid taskID"});
+      return res.status(400).send({ Error: "Invalid taskID" });
     }
     const wsID = req.workspace.workspaceID;
 
@@ -64,7 +64,9 @@ export const authorizeAssignee = async (
         .limit(1);
 
       if (isAssignee.length === 0) {
-        res.status(401).send({error: "You have not been assigned to this task"});
+        res
+          .status(401)
+          .send({ error: "You have not been assigned to this task" });
       } else {
         next();
       }
@@ -84,26 +86,17 @@ export const getTaskDetails = async (
   res: Response,
   next: NextFunction
 ) => {
-  const wsID: any = req.params.wsID;
-  const taskID: any = parseInt(req.params.taskID, 10);
+  const wsID = parseInt(req.params.wsID);
+  const taskID = parseInt(req.params.taskID, 10);
 
   try {
-
-    if (taskID !== req.params.taskID) {
-    return res.status(400).send({Error: "Invalid taskID"});
-    }
-    else{
-
     const Task = await db
       .select()
       .from(tasks)
       .where(and(eq(tasks.workspaceID, wsID), eq(tasks.taskID, taskID)))
       .limit(1);
 
-    console.log(Task);
-
     if (Task.length > 0) {
-
       console.log(Task[0]);
       res.locals.taskTitle = Task[0].title;
       res.locals.taskDescription = Task[0].description;
@@ -111,22 +104,21 @@ export const getTaskDetails = async (
       res.locals.taskStatus = Task[0].status;
 
       const Assignees = await db
-      .select({
-        name: users.name,
-      })
-      .from(assignees)
-      .where(and(eq(assignees.workspaceID, wsID), eq(assignees.taskID, taskID)))
-      .innerJoin(users, eq(users.userID, assignees.assigneeID));
+        .select({
+          name: users.name,
+        })
+        .from(assignees)
+        .where(
+          and(eq(assignees.workspaceID, wsID), eq(assignees.taskID, taskID))
+        )
+        .innerJoin(users, eq(users.userID, assignees.assigneeID));
 
-    res.locals.assignees = Assignees;
+      res.locals.assignees = Assignees;
 
       next();
     } else {
       res.status(404).send({ Message: "Task Doesn't Exist" });
     }
-  }
-
-   
 
     /*
     const taskMem = await db

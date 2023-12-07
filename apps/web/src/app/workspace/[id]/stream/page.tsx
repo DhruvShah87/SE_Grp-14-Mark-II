@@ -5,8 +5,6 @@ import StreamTitle from "../../components/streamPageTitle";
 export default async function page({ params }: { params: { id: string } }) {
   const res = await request(`${params.id}/stream`, "GET");
 
-  // console.log(res);
-
   return (
     <div className="Projectbg h-[calc(100vh-5.1rem)]">
       <div className="w-fit lg:w-4/5 md:w-4/5 sm:w-4/5 mx-auto p-10">
@@ -16,7 +14,7 @@ export default async function page({ params }: { params: { id: string } }) {
         <StreamPage
           streamData={res.Stream}
           workspaceId={params.id}
-          manager={res.Workspace.projectManager}
+          manager={res.Workspace.projectManagerEmail}
         />
       </div>
     </div>

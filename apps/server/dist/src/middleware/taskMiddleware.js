@@ -51,7 +51,9 @@ const authorizeAssignee = async (req, res, next) => {
                 .where((0, drizzle_orm_1.and)((0, drizzle_orm_1.eq)(TaskAssignee_1.assignees.workspaceID, wsID), (0, drizzle_orm_1.eq)(TaskAssignee_1.assignees.assigneeID, userID)))
                 .limit(1);
             if (isAssignee.length === 0) {
-                res.status(401).send({ error: "You have not been assigned to this task" });
+                res
+                    .status(401)
+                    .send({ error: "You have not been assigned to this task" });
             }
             else {
                 next();
@@ -70,38 +72,32 @@ const authorizeAssignee = async (req, res, next) => {
 };
 exports.authorizeAssignee = authorizeAssignee;
 const getTaskDetails = async (req, res, next) => {
-    const wsID = req.params.wsID;
+    const wsID = parseInt(req.params.wsID);
     const taskID = parseInt(req.params.taskID, 10);
     try {
-        if (taskID !== req.params.taskID) {
-            return res.status(400).send({ Error: "Invalid taskID" });
+        const Task = await database_1.db
+            .select()
+            .from(Task_1.tasks)
+            .where((0, drizzle_orm_1.and)((0, drizzle_orm_1.eq)(Task_1.tasks.workspaceID, wsID), (0, drizzle_orm_1.eq)(Task_1.tasks.taskID, taskID)))
+            .limit(1);
+        if (Task.length > 0) {
+            console.log(Task[0]);
+            res.locals.taskTitle = Task[0].title;
+            res.locals.taskDescription = Task[0].description;
+            res.locals.taskDeadline = Task[0].deadline;
+            res.locals.taskStatus = Task[0].status;
+            const Assignees = await database_1.db
+                .select({
+                name: User_1.users.name,
+            })
+                .from(TaskAssignee_1.assignees)
+                .where((0, drizzle_orm_1.and)((0, drizzle_orm_1.eq)(TaskAssignee_1.assignees.workspaceID, wsID), (0, drizzle_orm_1.eq)(TaskAssignee_1.assignees.taskID, taskID)))
+                .innerJoin(User_1.users, (0, drizzle_orm_1.eq)(User_1.users.userID, TaskAssignee_1.assignees.assigneeID));
+            res.locals.assignees = Assignees;
+            next();
         }
         else {
-            const Task = await database_1.db
-                .select()
-                .from(Task_1.tasks)
-                .where((0, drizzle_orm_1.and)((0, drizzle_orm_1.eq)(Task_1.tasks.workspaceID, wsID), (0, drizzle_orm_1.eq)(Task_1.tasks.taskID, taskID)))
-                .limit(1);
-            console.log(Task);
-            if (Task.length > 0) {
-                console.log(Task[0]);
-                res.locals.taskTitle = Task[0].title;
-                res.locals.taskDescription = Task[0].description;
-                res.locals.taskDeadline = Task[0].deadline;
-                res.locals.taskStatus = Task[0].status;
-                const Assignees = await database_1.db
-                    .select({
-                    name: User_1.users.name,
-                })
-                    .from(TaskAssignee_1.assignees)
-                    .where((0, drizzle_orm_1.and)((0, drizzle_orm_1.eq)(TaskAssignee_1.assignees.workspaceID, wsID), (0, drizzle_orm_1.eq)(TaskAssignee_1.assignees.taskID, taskID)))
-                    .innerJoin(User_1.users, (0, drizzle_orm_1.eq)(User_1.users.userID, TaskAssignee_1.assignees.assigneeID));
-                res.locals.assignees = Assignees;
-                next();
-            }
-            else {
-                res.status(404).send({ Message: "Task Doesn't Exist" });
-            }
+            res.status(404).send({ Message: "Task Doesn't Exist" });
         }
     }
     catch (error) {

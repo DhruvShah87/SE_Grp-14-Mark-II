@@ -17,9 +17,18 @@ const getStream = async (req, res) => {
     }
     try {
         const Workspace = await database_1.db
-            .select()
+            .select({
+            workspaceID: Workspace_1.workspaces.workspaceID,
+            title: Workspace_1.workspaces.title,
+            progress: Workspace_1.workspaces.progress,
+            description: Workspace_1.workspaces.description,
+            type: Workspace_1.workspaces.type,
+            projectManager: User_1.users.name,
+            projectManagerEmail: User_1.users.emailId,
+        })
             .from(Workspace_1.workspaces)
-            .where((0, drizzle_orm_1.eq)(Workspace_1.workspaces.workspaceID, wsID));
+            .where((0, drizzle_orm_1.eq)(Workspace_1.workspaces.workspaceID, wsID))
+            .innerJoin(User_1.users, (0, drizzle_orm_1.eq)(Workspace_1.workspaces.projectManager, User_1.users.userID));
         const taskStream = await database_1.db
             .select()
             .from(Task_1.tasks)

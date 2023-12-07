@@ -1,10 +1,15 @@
 "use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.getGoogleUrl = void 0;
-function getGoogleUrl() {
+const dotenv_1 = __importDefault(require("dotenv"));
+dotenv_1.default.config();
+function getGoogleUrl(redirect) {
     const rootUrl = "https://accounts.google.com/o/oauth2/v2/auth";
     const options = {
-        redirect_uri: "http://localhost:3500/api/auth/oauth/google",
+        redirect_uri: `${process.env.SERVER}/api${redirect}`,
         client_id: process.env.GOOGLE_CLIENT_ID,
         access_type: "offline",
         response_type: "code",

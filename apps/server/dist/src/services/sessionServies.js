@@ -13,12 +13,13 @@ exports.accessTokenCookieOptions = {
     expires: new Date(Date.now() + 86400 * 1000),
 };
 exports.refreshTokenCookieOptions = Object.assign(Object.assign({}, exports.accessTokenCookieOptions), { expires: new Date(Date.now() + 30 * 86400 * 1000) });
-const createSession = async (id, refresh_token, userAgent, isVerified) => {
+const createSession = async (id, refresh_token, userAgent, isVerified, isConnecteToGoogle) => {
     const session = {
         id,
         refresh_token,
         userAgent,
         isVerified,
+        isConnecteToGoogle,
     };
     redisConnect_1.client.set(id, JSON.stringify(session), "EX", 60 * 60 * 24 * 30);
     return session;

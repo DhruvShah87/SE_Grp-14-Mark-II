@@ -6,15 +6,14 @@ import { faGear } from "@fortawesome/free-solid-svg-icons";
 import { useParams } from "next/navigation";
 import { TaskDialog } from "@/components/ui/task-dialog";
 import MeetDialog from "./MeetDialog";
-import Image from "next/image";
 
 export default function ProjectNav() {
   const router = useParams();
   const { id } = router;
 
   return (
-    <div className="bg-white w-screen sticky top-0 overflow-hidden">
-      <div className="w-screen border-b-2">
+    <div className="bg-white w-screen sticky top-0">
+      <div className="w-screen">
         <NavComponent />
       </div>
       <div className="flex flex-col w-screen border-b py-2">

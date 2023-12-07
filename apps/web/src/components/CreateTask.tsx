@@ -133,7 +133,6 @@ export default function Task({ wsID }: { wsID: string }) {
     <div className="flex items-center justify-center">
       <div className="w-4/5 flex flex-col justify-evenly">
         <h1 className="text-3xl font-bold text-center text-slate-600">
-          <Toaster />
           Create a Task
         </h1>
         <Form {...form}>

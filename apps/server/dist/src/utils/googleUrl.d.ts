@@ -1,1 +1,1 @@
-export declare function getGoogleUrl(): string;
+export declare function getGoogleUrl(redirect: string): string;

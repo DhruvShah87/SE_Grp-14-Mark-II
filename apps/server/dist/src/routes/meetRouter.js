@@ -11,7 +11,7 @@ exports.meetRouter = router;
 router
     .route("/:wsID/scheduleMeet")
     .post(middleware_1.requireAuth, middleware_1.wsExist, middleware_1.authorizeMember, controllers_1.scheduleMeetHandler);
-router.route("/events").get(meetController_1.getCalendarEvents);
+router.route("/events").get(middleware_1.requireAuth, meetController_1.getCalendarEvents);
 router
     .route("/workspace/:wsID/meet/:meetID/dashboard")
     .get(middleware_1.requireAuth, middleware_1.wsExist, middleware_1.authorizeMember, middleware_1.meetExist, middleware_1.authorizeInvitee, controllers_1.meetDashboard);

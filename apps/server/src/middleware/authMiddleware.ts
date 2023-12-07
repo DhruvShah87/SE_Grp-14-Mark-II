@@ -11,6 +11,7 @@ interface payload {
     userID: number;
     name: string;
     isVerified: boolean;
+    isConnectedToGoogle: boolean;
   };
   iat: number;
   exp: number;

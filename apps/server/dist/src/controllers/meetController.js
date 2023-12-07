@@ -65,16 +65,6 @@ const scheduleMeetHandler = async (req, res) => {
                     inviteeID: participantDetails[0].memberID,
                 })
                     .execute();
-                if (userData.length > 0 && userData[0].gmailID) {
-                    (0, calendarService_1.insertEvent)({
-                        userID: userData[0].userID,
-                        summary: title,
-                        description: agenda,
-                        startTime: `${date}T${startTime}:00+05:30`,
-                        endTime: `${date}T${endTime}:00+05:30`,
-                        organizerEmail: organizerData[0].gmailID || organizerData[0].emailId,
-                    });
-                }
             }
             else {
                 outsideParticipants.push(participant);
@@ -92,8 +82,22 @@ const scheduleMeetHandler = async (req, res) => {
 exports.scheduleMeetHandler = scheduleMeetHandler;
 const getCalendarEvents = async (req, res) => {
     try {
-        const { userID } = req.query;
-        console.log(userID);
+        const userID = req.user.userID;
+        if (!req.user.isConnectedToGoogle) {
+            return res
+                .status(400)
+                .send({ message: "User is not connected to google" });
+        }
+        const User = await database_1.db
+            .select()
+            .from(User_1.users)
+            .where((0, drizzle_orm_1.eq)(User_1.users.userID, userID))
+            .limit(1);
+        if (User.length === 0 || !User[0].isConnectedToGoogle) {
+            return res
+                .status(400)
+                .send({ message: "User is not connected to google" });
+        }
         const token = await redisConnect_1.client.hgetall(userID + "_google_token", (err, token) => {
             if (err) {
                 console.log(err);
@@ -131,15 +135,12 @@ const deleteMeet = async (req, res) => {
         if (meetingDetails.length === 0) {
             return res.status(400).send({ message: "No such meet exists" });
         }
-        if (meetingDetails[0].organizerID !== req.user.userID) {
+        if (meetingDetails[0].organizerID !== req.user.userID ||
+            req.user.userID !== req.workspace.projectManager) {
             return res
                 .status(400)
                 .send({ message: "You are not authorized to delete this meet" });
         }
-        (0, calendarService_1.deleteCalendarEvent)({
-            userID: req.user.userID,
-            eventId: "eventID",
-        });
         await database_1.db
             .delete(Meet_1.meets)
             .where((0, drizzle_orm_1.and)((0, drizzle_orm_1.eq)(Meet_1.meets.meetID, meetIDToDelete), (0, drizzle_orm_1.eq)(Meet_1.meets.workspaceID, wsID)));

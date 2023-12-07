@@ -59,11 +59,15 @@ export default function TaskPage({
   taskID,
   type,
   data,
+  isManager,
+  isOrganizer,
 }: {
   wsID: string;
   taskID: string;
   type: string;
   data: dataType;
+  isManager: boolean;
+  isOrganizer?: boolean;
 }) {
   const Type = type[0].toUpperCase() + type.slice(1);
 
@@ -145,15 +149,22 @@ export default function TaskPage({
           </div>
         </div>
         <div className="mt-5 flex flex-col gap-2 w-fit mx-auto">
-          {type === "task" ? (
-            <EditTaskDialog
-              task={data["task"]!}
-              assignee={data["Assignees"]!}
-            />
-          ) : (
-            <EditMeetDialog meet={data["meet"]!} invitees={data["Invitees"]!} />
+          {type === "task"
+            ? isManager && (
+                <EditTaskDialog
+                  task={data["task"]!}
+                  assignee={data["Assignees"]!}
+                />
+              )
+            : (isManager || isOrganizer) && (
+                <EditMeetDialog
+                  meet={data["meet"]!}
+                  invitees={data["Invitees"]!}
+                />
+              )}
+          {(isManager || isOrganizer) && (
+            <DeleteTask wsID={wsID} taskID={taskID} Type={Type} />
           )}
-          <DeleteTask wsID={wsID} taskID={taskID} Type={Type} />
         </div>
       </div>
     </div>

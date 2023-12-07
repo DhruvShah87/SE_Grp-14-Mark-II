@@ -5,7 +5,7 @@ import { CalendarIcon } from "lucide-react";
 import { format } from "date-fns";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
-import toast, { Toaster } from "react-hot-toast";
+import toast from "react-hot-toast";
 
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -34,13 +34,8 @@ import {
   SelectContent,
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
-import { Checkbox } from "@/components/ui/checkbox";
-
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faUserPlus } from "@fortawesome/free-solid-svg-icons";
-
-import { useEffect, useState } from "react";
 import type { taskType, assigneeType } from "./taskPage";
+import { useRouter } from "next/navigation";
 
 const FormSchema = z.object({
   title: z
@@ -71,6 +66,7 @@ export default function EditTask({
   task: taskType;
   assignee: assigneeType[];
 }) {
+  const router = useRouter();
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
     mode: "onChange",
@@ -100,6 +96,9 @@ export default function EditTask({
       .then((data) => {
         if (data.message === "Task Edited Successfully") {
           toast.success(data.message);
+          setTimeout(() => {
+            router.push(`/workspace/${task.workspaceID}/stream`);
+          }, 700);
         } else {
           toast.error(data.message);
         }
@@ -110,8 +109,7 @@ export default function EditTask({
     <div className="flex items-center justify-center">
       <div className="w-4/5 flex flex-col justify-evenly">
         <h1 className="text-3xl font-bold text-center text-slate-600">
-          <Toaster />
-          Create a Task
+          Edit a Task
         </h1>
         <Form {...form}>
           <form

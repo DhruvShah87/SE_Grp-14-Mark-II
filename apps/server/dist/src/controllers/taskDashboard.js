@@ -42,7 +42,7 @@ const taskDashboard = async (req, res) => {
         console.log(Assignees);
         const taskDashboard = {
             task: Task[0],
-            manager: req.workspace.projectManager,
+            isManager: req.workspace.projectManager === req.user.userID,
             Assignees: Assignees,
         };
         await redisConnect_1.client.set(`task:${task_ID}`, JSON.stringify(taskDashboard), "EX", 60 * 60 * 24);

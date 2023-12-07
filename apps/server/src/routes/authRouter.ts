@@ -13,6 +13,7 @@ import {
   checkAuth,
 } from "../controllers";
 import { requireAuth } from "../middleware";
+import { googleConnectHandler } from "../controllers/oAuthController";
 
 const router: Router = Router();
 
@@ -23,7 +24,9 @@ router.route("/login").post(loginHandler);
 router.route("/verify").post(verifyUserHandler);
 
 router.route("/auth/oauth/google").get(googleoauthHandler);
-router.route("/googleurl").get(oauthHanlder);
+router.route("/googleurl").get(oauthHanlder).get(requireAuth, oauthHanlder);
+router.route("/google/connect/url").get(requireAuth, oauthHanlder);
+router.route("/google/connect").post(requireAuth, googleConnectHandler);
 
 router.route("/logout").get(requireAuth, logoutHandler);
 router.route("/forgotPassword").post(forgotPasswordPost);

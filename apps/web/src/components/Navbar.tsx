@@ -13,7 +13,7 @@ import { useState } from "react";
 export default function NavComponent() {
   const [navbar, setNavbar] = useState(false);
   return (
-    <div className="flex flex-col justify-around">
+    <div className="flex flex-col justify-around sticky top-0">
       {/* <div className="bg-white">
       <div className="h-[5rem] w-4/5 mx-auto flex flex-row items-center justify-between">
         <div>
@@ -51,7 +51,7 @@ export default function NavComponent() {
     </div> */}
 
       <div>
-        <nav className=" w-full mx-auto sticy top-0 left-0 right-0 z-10">
+        <nav className=" w-full mx-auto sticky top-0 left-0 right-0 z-10">
           <div className="justify-between px-4 mx-auto lg:max-w-7xl md:items-center md:flex md:px-8">
             <div>
               <div className="flex items-center justify-between py-3 md:py-5 md:block">

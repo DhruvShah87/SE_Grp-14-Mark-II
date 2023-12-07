@@ -1,18 +1,20 @@
 "use client";
-import React, { FC, useState, useRef, useEffect } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import Image from "next/image";
 
 import { useRouter, useSearchParams } from "next/navigation";
 import toast, { Toaster } from "react-hot-toast";
+import { useCookies } from "next-client-cookies";
 
 let currentOTPIndex: number = 0;
 export default function Verification() {
   const router = useRouter();
+  const cookies = useCookies();
   const searchParams = useSearchParams();
+
   const email = searchParams.get("email");
   const [otp, setotp] = useState<string[]>(new Array(6).fill(""));
   const [ActiveOTPIndex, setActiveOTPIndex] = useState<number>(0);
-  // const [status, setstatus] = useState("");
 
   const inputRef = useRef<HTMLInputElement>(null);
   const handleOnChange = ({
@@ -54,10 +56,15 @@ export default function Verification() {
 
       if (res.message == "User verified") {
         toast.success("User Verified");
-        router.push("/dashboard");
+
+        cookies.set("accessToken", res.access_token);
+        cookies.set("refreshToken", res.refresh_token);
+
+        setTimeout(() => {
+          router.push("/dashboard");
+        }, 700);
       } else {
         toast.error(res.message);
-        // setstatus(res.message);
       }
     } catch (err: any) {
       console.log("Login failed", err.message);
@@ -66,15 +73,16 @@ export default function Verification() {
 
   async function onresend() {
     try {
-      const res = await fetch("http://localhost:3500/api/resendOtp", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(email),
-      }).then((res) => res.json());
-      console.log(res.message);
-      toast(res.message);
+      const res = await fetch(
+        `${process.env.NEXT_PUBLIC_SERVER}/api/resendOtp`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(email),
+        }
+      ).then((res) => res.json());
     } catch (err: any) {
       console.log("Login failed", err.message);
     }

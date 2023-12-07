@@ -16,7 +16,7 @@ router
   .route("/:wsID/scheduleMeet")
   .post(requireAuth, wsExist, authorizeMember, scheduleMeetHandler);
 
-router.route("/events").get(getCalendarEvents);
+router.route("/events").get(requireAuth, getCalendarEvents);
 
 router
   .route("/workspace/:wsID/meet/:meetID/dashboard")

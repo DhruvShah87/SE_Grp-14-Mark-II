@@ -16,7 +16,6 @@ import { client as redisClient } from "../config/redisConnect";
 
 export const taskDashboard = async (req: Request, res: Response) => {
   try {
-    // const userID = req.user.userID;
     const wsID = req.workspace.workspaceID;
     const task_ID = req.task.taskID;
 
@@ -61,7 +60,7 @@ export const taskDashboard = async (req: Request, res: Response) => {
 
     const taskDashboard = {
       task: Task[0],
-      manager: req.workspace.projectManager,
+      isManager: req.workspace.projectManager === req.user.userID,
       Assignees: Assignees,
     };
 

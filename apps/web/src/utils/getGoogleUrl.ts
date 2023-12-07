@@ -1,11 +1,8 @@
-import dotenv from "dotenv";
-dotenv.config();
-
 export function getGoogleUrl(redirect: string) {
   const rootUrl = "https://accounts.google.com/o/oauth2/v2/auth";
 
   const options = {
-    redirect_uri: `${process.env.SERVER}/api${redirect}`,
+    redirect_uri: `${process.env.SERVER}/api/connect/google`,
     client_id: process.env.GOOGLE_CLIENT_ID!,
     access_type: "offline",
     response_type: "code",

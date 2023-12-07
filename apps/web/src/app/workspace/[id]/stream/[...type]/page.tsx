@@ -13,14 +13,14 @@ export default async function page({
     "GET"
   );
 
-  console.log(res);
-
   return (
     <TaskPage
       data={res}
       wsID={params.id}
       taskID={params.type[0]}
       type={params.type[1]}
+      isManager={res.isManager}
+      isOrganizer={res.isOrganizer}
     />
   );
 }

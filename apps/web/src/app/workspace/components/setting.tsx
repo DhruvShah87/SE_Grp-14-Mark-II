@@ -2,17 +2,13 @@
 import React from "react";
 import { useState, useEffect } from "react";
 import axios from "axios";
-// import { useParams } from 'react-router-dom'
-import { useParams } from "next/navigation";
-import { useFieldArray, useForm } from "react-hook-form";
-import { useRouter, useSearchParams } from "next/navigation";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faXmark } from "@fortawesome/free-solid-svg-icons";
+import { useRouter, useParams } from "next/navigation";
+import { useCookies } from "next-client-cookies";
 
 export default function Setting() {
-
   const params = useParams();
   const id = params.id;
+  const cookie = useCookies();
 
   const [workspace, setWorkspace] = useState({
     title: "",
@@ -23,7 +19,6 @@ export default function Setting() {
   const router = useRouter();
 
   const onFormSubmit = () => {
-
     let title = workspace.title;
     let type = workspace.type;
     let description = workspace.description;
@@ -32,11 +27,13 @@ export default function Setting() {
         `${process.env.NEXT_PUBLIC_SERVER}/api/${id}/editWSDetails`,
         {
           method: "PATCH",
-          credentials: 'include',
+          credentials: "include",
           headers: {
             "Content-Type": "application/json",
+            Authorization: `Bearer ${cookie.get("accessToken")}`,
+            cookie: cookie.get("refreshToken")!,
           },
-          body: JSON.stringify({ title, type, description}),
+          body: JSON.stringify({ title, type, description }),
         }
       ).then((res) => res.json());
       router.push("/dashboard");
@@ -46,21 +43,18 @@ export default function Setting() {
   };
 
   useEffect(() => {
-    
     axios.defaults.withCredentials = true;
     const once = () => {
       axios
         .get(`${process.env.NEXT_PUBLIC_SERVER}/api/${id}/editWSDetails`)
-        .then(
-          (res) => {
-            setWorkspace({
-              ...workspace,
-              title: res.data.title,
-              type: res.data.type,
-              description: res.data.description,
-            });
-          } 
-        )
+        .then((res) => {
+          setWorkspace({
+            ...workspace,
+            title: res.data.title,
+            type: res.data.type,
+            description: res.data.description,
+          });
+        })
         .catch((err) => console.log(err));
     };
     return () => once();
@@ -137,7 +131,7 @@ export default function Setting() {
                   })
                 }
               ></textarea>
-{/* 
+              {/* 
               <label
                 htmlFor="member"
                 id="member"

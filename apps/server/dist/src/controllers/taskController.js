@@ -427,8 +427,9 @@ const removeTaskAssignees = async (req, res) => {
 exports.removeTaskAssignees = removeTaskAssignees;
 const deleteTask = async (req, res) => {
     try {
-        const taskIDToDelete = req.params.taskID;
-        const wsID = req.params.wsID;
+        console.log("delete task controller");
+        const taskIDToDelete = parseInt(req.params.taskID);
+        const wsID = parseInt(req.params.wsID);
         await database_1.db.delete(Task_1.tasks).where((0, drizzle_orm_1.eq)(Task_1.tasks.taskID, taskIDToDelete));
         await database_1.db.delete(TaskAssignee_1.assignees).where((0, drizzle_orm_1.eq)(TaskAssignee_1.assignees.taskID, taskIDToDelete));
         res.status(200).send({

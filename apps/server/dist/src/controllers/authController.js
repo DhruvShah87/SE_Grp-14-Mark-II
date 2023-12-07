@@ -71,18 +71,22 @@ const verifyUserHandler = async (req, res) => {
             .set({ isVerified: true })
             .where((0, drizzle_orm_1.eq)(User_1.users.emailId, email))
             .returning();
-        console.log(User);
         const userID = User[0].userID;
         const name = User[0].name;
         const isVerified = true;
-        const tokenUser = { userID, name, isVerified };
+        const tokenUser = {
+            userID,
+            name,
+            isVerified,
+            isConnectedToGoogle: User[0].isConnectedToGoogle,
+        };
         const session_id = User[0].userID.toString();
         const access_token = (0, jwt_1.signJWT)({ tokenUser }, { expiresIn: "24h" });
         const refresh_token = (0, jwt_1.signJWT)({ tokenUser, session: session_id }, { expiresIn: "30d" });
-        const session = await (0, sessionServies_1.createSession)(session_id, req.get("user-agent") || "", refresh_token, isVerified);
-        res.cookie("refreshToken", refresh_token, sessionServies_1.refreshTokenCookieOptions);
-        res.cookie("accessToken", access_token, sessionServies_1.accessTokenCookieOptions);
-        return res.status(200).send({ message: "User verified" });
+        const session = await (0, sessionServies_1.createSession)(session_id, req.get("user-agent") || "", refresh_token, isVerified, User[0].isConnectedToGoogle);
+        return res
+            .status(200)
+            .send({ message: "User verified", access_token, refresh_token });
     });
 };
 exports.verifyUserHandler = verifyUserHandler;
@@ -100,8 +104,13 @@ const loginHandler = async (req, res) => {
         if (User.length < 1) {
             return res.status(400).send({ error: "Invalid Credentials" });
         }
-        const { userID, name, isVerified } = User[0];
-        const tokenUser = { userID, name, isVerified };
+        const { userID, name, isVerified, isConnectedToGoogle } = User[0];
+        const tokenUser = {
+            userID,
+            name,
+            isVerified,
+            isConnectedToGoogle: User[0].isConnectedToGoogle,
+        };
         const isPasswordCorrect = await bcrypt_1.default.compare(password, User[0].password);
         if (!isPasswordCorrect) {
             return res.status(400).send({ error: "Invalid Credentials" });
@@ -109,7 +118,7 @@ const loginHandler = async (req, res) => {
         const session_id = User[0].userID.toString();
         const access_token = (0, jwt_1.signJWT)({ tokenUser }, { expiresIn: "24h" });
         const refresh_token = (0, jwt_1.signJWT)({ tokenUser, session: session_id }, { expiresIn: "30d" });
-        const session = await (0, sessionServies_1.createSession)(session_id, req.get("user-agent") || "", refresh_token, isVerified);
+        const session = await (0, sessionServies_1.createSession)(session_id, req.get("user-agent") || "", refresh_token, isVerified, isConnectedToGoogle);
         return res.send({
             message: "Login successful",
             access_token,

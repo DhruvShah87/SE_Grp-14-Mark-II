@@ -2,6 +2,7 @@ import "./globals.css";
 import type { Metadata } from "next";
 import { mont } from "@/utils/fonts";
 import { CookiesProvider } from "next-client-cookies/server";
+import { Toaster } from "react-hot-toast";
 
 export const metadata: Metadata = {
   title: "Teem App",
@@ -32,7 +33,10 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={mont.className}>
-        <CookiesProvider>{children}</CookiesProvider>
+        <CookiesProvider>
+          {children}
+          <Toaster />
+        </CookiesProvider>
       </body>
     </html>
   );

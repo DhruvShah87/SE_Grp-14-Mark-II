@@ -29,11 +29,10 @@ import {
 
 const router: Router = Router();
 
-router.route("/:wsID/assignTask")
+router
+  .route("/:wsID/assignTask")
   .get(requireAuth, wsExist, authorizeManager, assignTaskGet)
   .post(requireAuth, wsExist, authorizeManager, assignTaskPost);
-
-
 
 router
   .route("/workspace/:wsID/task/:taskID/dashboard")
@@ -55,48 +54,18 @@ router
 
 router
   .route("/:wsID/:taskID/editTaskAssignees")
-  .get(
-    requireAuth,
-    wsExist,
-    authorizeManager,
-    getTaskDetails,
-    editTaskAssigneesGet
-  )
-  .patch(
-    requireAuth,
-    wsExist,
-    authorizeManager,
-    getTaskDetails,
-    editTaskAssigneesPATCH
-  );
+  .get(requireAuth, wsExist, authorizeManager, editTaskAssigneesGet)
+  .patch(requireAuth, wsExist, authorizeManager, editTaskAssigneesPATCH);
 
-  router
+router
   .route("/:wsID/:taskID/editTaskDetails")
-  .get(
-    requireAuth,
-    wsExist,
-    authorizeManager,
-    getTaskDetails,
-    editTaskDetailsGet
-  )
-  .patch(
-    requireAuth,
-    wsExist,
-    authorizeManager,
-    getTaskDetails,
-    editTaskDetailsPATCH
-  )
+  .get(requireAuth, wsExist, authorizeManager, editTaskDetailsGet)
+  .patch(requireAuth, wsExist, authorizeManager, editTaskDetailsPATCH);
 
 router
   .route("/:wsID/:taskID/editTaskDetails")
   // .get(requireAuth, wsExist, authorizeManager, taskExist, getTaskDetails, editTaskAssigneesGet)
-  .delete(
-    requireAuth,
-    wsExist,
-    authorizeManager,
-    getTaskDetails,
-    deleteTask
-  );
+  .delete(requireAuth, wsExist, authorizeManager, deleteTask);
 /*
 router.route("/:wsID/:taskID/settingsTask/:toDo")
   .get(requireAuth, wsExist, authorizeManager, getTaskDetails, settingsTaskGet)

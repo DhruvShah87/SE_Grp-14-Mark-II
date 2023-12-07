@@ -3,7 +3,7 @@ import { Request, Response } from "express";
 import { db } from "../config/database";
 import { meets } from "../model/Meet";
 import { users } from "../model/User";
-import { eq, and, desc } from "drizzle-orm";
+import { eq, and } from "drizzle-orm";
 import { invitees } from "../model/MeetInvitee";
 import { members } from "../model/Workspace";
 import type { event } from "../types/calendarEvent";
@@ -87,17 +87,17 @@ export const scheduleMeetHandler = async (req: Request, res: Response) => {
           })
           .execute();
 
-        if (userData.length > 0 && userData[0].gmailID) {
-          insertEvent({
-            userID: userData[0].userID,
-            summary: title,
-            description: agenda,
-            startTime: `${date}T${startTime}:00+05:30`,
-            endTime: `${date}T${endTime}:00+05:30`,
-            organizerEmail:
-              organizerData[0].gmailID || organizerData[0].emailId,
-          });
-        }
+        // if (userData.length > 0 && userData[0].gmailID) {
+        //   insertEvent({
+        //     userID: userData[0].userID,
+        //     summary: title,
+        //     description: agenda,
+        //     startTime: `${date}T${startTime}:00+05:30`,
+        //     endTime: `${date}T${endTime}:00+05:30`,
+        //     organizerEmail:
+        //       organizerData[0].gmailID || organizerData[0].emailId,
+        //   });
+        // }
       } else {
         outsideParticipants.push(participant);
       }
@@ -116,8 +116,26 @@ export const scheduleMeetHandler = async (req: Request, res: Response) => {
 
 export const getCalendarEvents = async (req: Request, res: Response) => {
   try {
-    const { userID } = req.query;
-    console.log(userID);
+    const userID = req.user.userID;
+
+    if (!req.user.isConnectedToGoogle) {
+      return res
+        .status(400)
+        .send({ message: "User is not connected to google" });
+    }
+
+    const User = await db
+      .select()
+      .from(users)
+      .where(eq(users.userID, userID))
+      .limit(1);
+
+    if (User.length === 0 || !User[0].isConnectedToGoogle) {
+      return res
+        .status(400)
+        .send({ message: "User is not connected to google" });
+    }
+
     const token = await redisClient.hgetall(
       userID + "_google_token",
       (err, token) => {
@@ -169,17 +187,20 @@ export const deleteMeet = async (req: Request, res: Response) => {
       return res.status(400).send({ message: "No such meet exists" });
     }
 
-    if (meetingDetails[0].organizerID !== req.user.userID) {
+    if (
+      meetingDetails[0].organizerID !== req.user.userID ||
+      req.user.userID !== req.workspace.projectManager
+    ) {
       return res
         .status(400)
         .send({ message: "You are not authorized to delete this meet" });
     }
 
     //delete meet from google calendar
-    deleteCalendarEvent({
-      userID: req.user.userID,
-      eventId: "eventID",
-    });
+    // deleteCalendarEvent({
+    //   userID: req.user.userID,
+    //   eventId: "eventID",
+    // });
 
     //delete meet from meet table
     await db
@@ -228,8 +249,6 @@ export const editMeetDetails = async (req: Request, res: Response) => {
 
   var { title, agenda, description, date, startTime, endTime, venue } =
     req.body;
-
-  // console.log(req.body);
 
   try {
     if (

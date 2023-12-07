@@ -649,10 +649,11 @@ export const removeTaskAssignees = async (req: Request, res: Response) => {
 // delete task controller
 export const deleteTask = async (req: Request, res: Response) => {
   try {
+    console.log("delete task controller");
     // getting taskID from params
-    const taskIDToDelete: any = req.params.taskID;
+    const taskIDToDelete = parseInt(req.params.taskID);
     //getting workspaceID from params
-    const wsID: any = req.params.wsID;
+    const wsID = parseInt(req.params.wsID);
 
     //delete task from task table
     await db.delete(tasks).where(eq(tasks.taskID, taskIDToDelete));

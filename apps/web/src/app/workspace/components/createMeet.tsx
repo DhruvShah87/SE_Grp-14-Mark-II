@@ -41,6 +41,10 @@ import { faUserPlus } from "@fortawesome/free-solid-svg-icons";
 import { useEffect, useState } from "react";
 import { useCookies } from "next-client-cookies";
 
+import toast from "react-hot-toast";
+import { useRouter } from "next/navigation";
+import { Icons } from "@/components/ui/icons";
+
 export type participant = {
   userID: number;
   userName: string;
@@ -94,7 +98,9 @@ const defaultValues: Partial<MeetingFormValues> = {
 export function MeetingForm({ wsID }: { wsID: string }) {
   const [data, setData] = useState<Array<participant>>([]);
   const [loading, setLoading] = useState(true);
+  const [loading2, setLoading2] = useState(false);
   const cookie = useCookies();
+  const router = useRouter();
 
   useEffect(() => {
     fetch(`${process.env.NEXT_PUBLIC_SERVER}/api/${wsID}/allpeople`, {
@@ -131,6 +137,7 @@ export function MeetingForm({ wsID }: { wsID: string }) {
 
   function onSubmit(data: MeetingFormValues) {
     console.log(JSON.stringify(data));
+    setLoading2(true);
 
     const res = fetch(
       `${process.env.NEXT_PUBLIC_SERVER}/api/${wsID}/scheduleMeet`,
@@ -144,7 +151,19 @@ export function MeetingForm({ wsID }: { wsID: string }) {
         },
         body: JSON.stringify(data),
       }
-    ).then((res) => res.json());
+    )
+      .then((res) => res.json())
+      .then((data) => {
+        setLoading2(false);
+        if (data.message === "Meet scheduled successfully") {
+          toast.success("Meet scheduled successfully");
+          setTimeout(() => {
+            router.push(`/workspace/${wsID}/stream`);
+          }, 700);
+        } else {
+          toast.error("Meet not scheduled");
+        }
+      });
   }
 
   const now = new Date();
@@ -265,13 +284,11 @@ export function MeetingForm({ wsID }: { wsID: string }) {
                   </FormControl>
                   <SelectContent className="max-h-[300px] w-[240px]">
                     {timeOptions.map((t) => {
-                      if (t > time) {
-                        return (
-                          <SelectItem key={t} value={t}>
-                            {t}
-                          </SelectItem>
-                        );
-                      }
+                      return (
+                        <SelectItem key={t} value={t}>
+                          {t}
+                        </SelectItem>
+                      );
                     })}
                   </SelectContent>
                 </Select>
@@ -391,7 +408,8 @@ export function MeetingForm({ wsID }: { wsID: string }) {
           type="submit"
           className="bg-[#295be75c] rounded-[7px] text-lg hover:bg-[#BDC4D8]  px-6 py-2"
         >
-          Create
+          {loading2 && <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />}
+          Create Meet
         </Button>
       </form>
     </Form>

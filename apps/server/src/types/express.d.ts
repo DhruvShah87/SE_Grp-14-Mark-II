@@ -4,22 +4,23 @@ declare namespace Express {
       userID: number;
       name: string;
       isVerified: boolean;
+      isConnectedToGoogle: boolean;
     };
-    workspace :{
+    workspace: {
       workspaceID: number;
       title: string;
       projectManager: number;
     };
-    task :{
+    task: {
       taskID: number;
       title: string;
       workspaceID: number | null;
     };
-    meet :{
+    meet: {
       meetID: number;
       title: string;
       workspaceID: number | null;
-      organizerID : number;
-    }
+      organizerID: number;
+    };
   }
 }

@@ -15,18 +15,18 @@ export const meetDashboard = async (req: Request, res: Response) => {
     const wsID = req.workspace.workspaceID;
     const meetID = req.meet.meetID;
 
-    const cachedMeet = await redisClient.get(`meet:${meetID}`, (err, data) => {
-      if (err) {
-        console.log(err);
-        return res.status(500).send({ message: "Internal server error" });
-      }
-      return data;
-    });
+    // const cachedMeet = await redisClient.get(`meet:${meetID}`, (err, data) => {
+    //   if (err) {
+    //     console.log(err);
+    //     return res.status(500).send({ message: "Internal server error" });
+    //   }
+    //   return data;
+    // });
 
-    if (cachedMeet) {
-      console.log("cached");
-      return res.status(200).json(JSON.parse(cachedMeet));
-    }
+    // if (cachedMeet) {
+    //   console.log("cached");
+    //   return res.status(200).json(JSON.parse(cachedMeet));
+    // }
 
     const Meet = await db
       .select()
@@ -66,7 +66,13 @@ export const meetDashboard = async (req: Request, res: Response) => {
       60 * 60 * 24
     );
 
-    res.json(meetDashboard);
+    res.send({
+      meet: meetDashboard.meet,
+      Invitees: meetDashboard.Invitees,
+      manager: meetDashboard.manager,
+      isOrganizer: Meet[0].organizerID === req.user.userID,
+      isManager: req.workspace.projectManager === req.user.userID,
+    });
   } catch (err) {
     console.log(err);
     return res

@@ -254,7 +254,7 @@ export default function UserAuthForm() {
                   className=" rounded-xl py-2 px-3 flex items-center justify-center bg-white border border-black hover:bg-gray-300 hover:font-bold"
                 >
                   <Link
-                    href={"http://localhost:3500/api/googleurl"}
+                    href={`${process.env.NEXT_PUBLIC_SERVER}/api/googleurl`}
                     className={cn(
                       isLoading && "cursor-not-allowed",
                       " flex items-center justify-center py-1"

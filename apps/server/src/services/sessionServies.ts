@@ -6,8 +6,6 @@ import jwt from "jsonwebtoken";
 export const accessTokenCookieOptions: CookieOptions = {
   httpOnly: false,
   secure: false,
-  // sameSite: "none",
-  // domain: "teem-app.vercel.app",
   path: "/",
   expires: new Date(Date.now() + 86400 * 1000),
 };
@@ -21,13 +19,15 @@ export const createSession = async (
   id: string,
   refresh_token: string,
   userAgent: string,
-  isVerified: boolean
+  isVerified: boolean,
+  isConnecteToGoogle: boolean
 ) => {
   const session: SessionType = {
     id,
     refresh_token,
     userAgent,
     isVerified,
+    isConnecteToGoogle,
   };
 
   redisClient.set(id, JSON.stringify(session), "EX", 60 * 60 * 24 * 30);

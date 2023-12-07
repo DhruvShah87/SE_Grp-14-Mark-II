@@ -8,12 +8,7 @@ import bcrypt from "bcrypt";
 
 import { randomInt } from "crypto";
 import { client as redisClient } from "../config/redisConnect";
-import {
-  createSession,
-  accessTokenCookieOptions,
-  refreshTokenCookieOptions,
-  deleteSession,
-} from "../services/sessionServies";
+import { createSession, deleteSession } from "../services/sessionServies";
 import { signJWT } from "../utils/jwt";
 
 export const signUpHandler = async (req: Request, res: Response) => {
@@ -87,13 +82,16 @@ export const verifyUserHandler = async (req: Request, res: Response) => {
       .where(eq(users.emailId, email))
       .returning();
 
-    console.log(User);
-
     const userID = User[0].userID;
     const name = User[0].name;
     const isVerified = true;
 
-    const tokenUser = { userID, name, isVerified };
+    const tokenUser = {
+      userID,
+      name,
+      isVerified,
+      isConnectedToGoogle: User[0].isConnectedToGoogle,
+    };
 
     const session_id = User[0].userID.toString();
 
@@ -108,15 +106,13 @@ export const verifyUserHandler = async (req: Request, res: Response) => {
       session_id,
       req.get("user-agent") || "",
       refresh_token,
-      isVerified
+      isVerified,
+      User[0].isConnectedToGoogle
     );
 
-    // console.log("Inside the verify route", access_token, refresh_token);
-
-    res.cookie("refreshToken", refresh_token, refreshTokenCookieOptions);
-    res.cookie("accessToken", access_token, accessTokenCookieOptions);
-
-    return res.status(200).send({ message: "User verified" });
+    return res
+      .status(200)
+      .send({ message: "User verified", access_token, refresh_token });
   });
 };
 
@@ -137,9 +133,14 @@ export const loginHandler = async (req: Request, res: Response) => {
     if (User.length < 1) {
       return res.status(400).send({ error: "Invalid Credentials" });
     }
-    const { userID, name, isVerified } = User[0];
+    const { userID, name, isVerified, isConnectedToGoogle } = User[0];
 
-    const tokenUser = { userID, name, isVerified };
+    const tokenUser = {
+      userID,
+      name,
+      isVerified,
+      isConnectedToGoogle: User[0].isConnectedToGoogle,
+    };
 
     const isPasswordCorrect = await bcrypt.compare(password, User[0].password!);
 
@@ -148,29 +149,7 @@ export const loginHandler = async (req: Request, res: Response) => {
     }
 
     const session_id = User[0].userID.toString();
-    // const existing_session = await findSessions(session_id);
 
-    // if (existing_session) {
-    //   if (!req.cookies.accessToken) {
-    //     const access_token = signJWT({ tokenUser }, { expiresIn: "24h" });
-    //     res.cookie("accessToken", access_token, accessTokenCookieOptions);
-    //     res.cookie("refreshToken", existing_session, refreshTokenCookieOptions);
-
-    //     // console.log("Access token created", existing_session);
-    //     return res.send({
-    //       message: "Login successful",
-    //       access_token,
-    //       existing_session,
-    //     });
-    //   }
-
-    //   // console.log(req.cookies.accessToken);
-    //   console.log("Already logged in");
-
-    //   return res.status(200).send({ message: "Already logged in" });
-    // }
-
-  
     const access_token = signJWT({ tokenUser }, { expiresIn: "24h" });
 
     const refresh_token = signJWT(
@@ -182,7 +161,8 @@ export const loginHandler = async (req: Request, res: Response) => {
       session_id,
       req.get("user-agent") || "",
       refresh_token,
-      isVerified
+      isVerified,
+      isConnectedToGoogle
     );
 
     return res.send({

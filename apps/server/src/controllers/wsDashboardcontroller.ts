@@ -27,9 +27,18 @@ export const getStream = async (req: Request, res: Response) => {
 
   try {
     const Workspace = await db
-      .select()
+      .select({
+        workspaceID: workspaces.workspaceID,
+        title: workspaces.title,
+        progress: workspaces.progress,
+        description: workspaces.description,
+        type: workspaces.type,
+        projectManager: users.name,
+        projectManagerEmail: users.emailId,
+      })
       .from(workspaces)
-      .where(eq(workspaces.workspaceID, wsID));
+      .where(eq(workspaces.workspaceID, wsID))
+      .innerJoin(users, eq(workspaces.projectManager, users.userID));
 
     const taskStream = await db
       .select()

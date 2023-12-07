@@ -80,7 +80,7 @@ export default function WorkComponent({
                 <Tasks
                   key={task.taskID!}
                   id={task.taskID!}
-                  type={type.toLowerCase()}
+                  type={type === "Work" ? "task" : type.toLowerCase()}
                   workspaceId={wsID}
                   title={task.taskTitle!}
                   date={task.taskDeadline!}

@@ -34,8 +34,9 @@ import {
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import type { meetType, inviteeType } from "./taskPage";
-import toast, { Toaster } from "react-hot-toast";
+import toast from "react-hot-toast";
 import { useCookies } from "next-client-cookies";
+import { useRouter } from "next/navigation";
 
 const meetingFormSchema = z.object({
   title: z
@@ -71,8 +72,9 @@ export function EditMeet({
   meet: meetType;
   invitees: inviteeType[];
 }) {
-  const val = meet.endTime.slice(0, 5);
   const cookie = useCookies();
+  const router = useRouter();
+
   const form = useForm<MeetingFormValues>({
     resolver: zodResolver(meetingFormSchema),
     defaultValues: {
@@ -106,6 +108,7 @@ export function EditMeet({
         console.log(data.message);
         if (data.message === "Meet Edited Successfully") {
           toast.success(data.message);
+          router.push(`/workspace/${meet.workspaceID}/stream`);
         } else {
           toast.error(data.message);
         }
